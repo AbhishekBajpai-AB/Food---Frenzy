@@ -1,105 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
-    <meta charset="UTF-8" />
-    <title>TEA : REGISTER</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            margin: 0;
-        }
-
-        .RegistrationContainer {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .registration {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
-            padding: 20px;
-        }
-
-        .registration h2 {
-            text-align: center;
-            color: #333;
-        }
-
-        .registration label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-        }
-
-        .registration input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .registration button {
-            background-color: #4caf50;
-            color: #fff;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .registration button:hover {
-            background-color: #45a049;
-        }
-
-        .registration p {
-            margin-top: 10px;
-            text-align: center;
-            font-size: 14px;
-            color: #ff0000;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FoodFrenzy | Create account</title>
+    <link rel="stylesheet" th:href="@{/css/Navigation.css}">
+    <link rel="stylesheet" th:href="@{/css/Auth.css}">
 </head>
+<body class="auth-page">
+    <nav th:replace="~{Navigation::navbar()}"></nav>
+    <main class="auth-shell register-shell">
+        <header class="auth-heading">
+            <p class="eyebrow">YOUR TABLE IS WAITING</p>
+            <h1>Create your account.</h1>
+            <p>It only takes a moment. Your order history will be here whenever you return.</p>
+        </header>
+        <section class="auth-card register-card">
+            <form th:action="@{/register}" th:object="${registration}" method="post">
+                <label for="uname">Full name</label>
+                <input id="uname" type="text" th:field="*{uname}" autocomplete="name" minlength="2" maxlength="80" required>
+                <small class="form-error" th:if="${#fields.hasErrors('uname')}" th:errors="*{uname}"></small>
 
-<body>
-    <div class="RegistrationContainer">
-        <div class="registration">
-            <div class="content">
-                <h2>Register</h2>
+                <label for="uemail">Email address</label>
+                <input id="uemail" type="email" th:field="*{uemail}" autocomplete="email" required>
+                <small class="form-error" th:if="${#fields.hasErrors('uemail')}" th:errors="*{uemail}"></small>
 
-            <form th:action="@{/register}" method="get" th:object="${userRegistration}">
-				    <label for="u_id">UserID:</label>
-                    <input type="text" id="u_id" name="u_id" th:field="*{u_id}" required><br>
-                    
-                    <label for="uemail">Email:</label>
-                    <input type="email" id="uemail" name="uemail" th:field="*{uemail}" required><br>
+                <label for="unumber">10 digit mobile number</label>
+                <input id="unumber" type="tel" th:field="*{unumber}" inputmode="numeric" pattern="[0-9]{10}" minlength="10" maxlength="10" required>
+                <small class="form-error" th:if="${#fields.hasErrors('unumber')}" th:errors="*{unumber}"></small>
 
-                    <label for="uname">Username:</label>
-                    <input type="text" id="uname" name="uname" th:field="*{uname}" required><br>
+                <label for="upassword">Password</label>
+                <input id="upassword" type="password" th:field="*{upassword}" autocomplete="new-password" minlength="8" maxlength="72" required>
+                <small class="form-hint">Use at least 8 characters.</small>
+                <small class="form-error" th:if="${#fields.hasErrors('upassword')}" th:errors="*{upassword}"></small>
 
-                    <label for="unumber">Phone Number:</label>
-                    <input type="text" id="unumber" name="unumber" th:field="*{unumber}" required><br>
-
-                    <label for="upassword">Password:</label>
-                    <input type="password" id="upassword" name="upassword" th:field="*{upassword}" required><br>
-
-                    <button type="submit">Register</button>
-                </form>
-
-
-                <p th:text="${error}" style="color: red;"></p>
-            </div>
-        </div>
-    </div>
+                <button class="button button-primary button-wide" type="submit">Create account</button>
+            </form>
+            <p class="auth-footnote">Already have an account? <a th:href="@{/login}">Sign in</a></p>
+        </section>
+    </main>
 </body>
-
 </html>

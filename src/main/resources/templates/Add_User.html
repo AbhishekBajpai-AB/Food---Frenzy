@@ -1,27 +1,13 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.com">
-
-<head>
-	<meta charset="UTF-8" />
-	<title>Document</title>
-	<link rel="stylesheet" href="" th:href="@{/css/Add_User.css}" />
-</head>
-
-<body>
-<a href="/admin/services">Back to Services</a>
-	<div class="addUser">
-		<h3 style="color: red;">ADD NEW USER/CUSTOMER</h3>
-		<form action="" th:action="@{/addingUser}" method="post">
-			<label for="name">User_Name :</label>
-			<input type="text" name="uname" />
-			<label for="email" />User_Email :
-			<input type="email" name="uemail" />
-			<label for="telephone">User_Number :</label>
-			<input type="tel" name="unumber" pattern="[0-9]{10}"/>
-			<input type="hidden" name="upassword" value="2330" />
-		</form>
-		<button type="submit">Add_User</button>
-	</div>
-</body>
-
-</html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Add customer | FoodFrenzy</title><link rel="stylesheet" th:href="@{/css/Navigation.css}"><link rel="stylesheet" th:href="@{/css/AdminForms.css}"></head>
+<body><nav th:replace="~{Navigation::navbar()}"></nav>
+<main class="form-page"><a class="back-link" th:href="@{/admin/services}">← Dashboard</a><header><p class="eyebrow">CUSTOMER ACCOUNTS</p><h1>Add a customer</h1><p>Create an account on behalf of a customer.</p></header>
+<div class="notice notice-error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+<form class="management-form" th:action="@{/addingUser}" th:object="${user}" method="post">
+    <label for="uname">Full name</label><input id="uname" type="text" th:field="*{uname}" minlength="2" maxlength="80" required><small class="form-error" th:if="${#fields.hasErrors('uname')}" th:errors="*{uname}"></small>
+    <label for="uemail">Email address</label><input id="uemail" type="email" th:field="*{uemail}" required><small class="form-error" th:if="${#fields.hasErrors('uemail')}" th:errors="*{uemail}"></small>
+    <label for="unumber">10 digit phone number</label><input id="unumber" type="tel" th:field="*{unumber}" pattern="[0-9]{10}" required><small class="form-error" th:if="${#fields.hasErrors('unumber')}" th:errors="*{unumber}"></small>
+    <label for="upassword">Temporary password</label><input id="upassword" type="password" th:field="*{upassword}" minlength="8" maxlength="72" required><small class="form-error" th:if="${#fields.hasErrors('upassword')}" th:errors="*{upassword}"></small>
+    <button class="button button-primary" type="submit">Create customer</button>
+</form></main></body></html>

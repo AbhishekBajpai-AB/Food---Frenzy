@@ -1,133 +1,92 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.com">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-	<meta charset="UTF-8" />
-	<title>Buy Product </title>
-	<link rel="stylesheet" href="" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FoodFrenzy | Your orders</title>
+    <link rel="stylesheet" th:href="@{/css/Navigation.css}">
+    <link rel="stylesheet" th:href="@{/css/BuyProduct.css}">
 </head>
-<style>
-	body {
-		background-image: url("https://images.pexels.com/photos/7219747/pexels-photo-7219747.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
-		 background-size: cover; 
-	}
-
-	* {
-		font-size: 16px;
-		font-family: sans-serif;
-	}
-
-	.searchInput {
-		margin-top: 30px;
-	}
-
-	.searchInput input {
-		padding: 15px;
-		width: 270px;
-	}
-
-	.searchInput button {
-		padding: 15px;
-		width: 100px;
-		background-color: red;
-	}
-
-	.details {
-		margin-top: 70px;
-	}
-
-	.details input,
-	.details button {
-		display: block;
-		padding: 5px;
-		font-size: 16px;
-		
-
-	}
-
-	a {
-		border: 1px solid black;
-		background-color: darkgoldenrod;
-		color: black;
-		text-decoration: none;
-		padding: 7px;
-		width: 50px;
-		position: fixed;
-	}
-	.details th{
-		background-color: dimgray;
-		font-family: sans-serif;
-		padding: 10px;
-		border: none;
-	
-	}
-	td{
-		text-align: center;
-		border-bottom: 1px solid lightslategrey;
-	}
-	.welcome marquee,.welcome span
-	{
-		
-		width: 50%;
-		font-size: 20px;
-		font-family: sans-serif;
-		color: lavender;
-	}
-	
-</style>
-
 <body>
-	<div class="welcome">
-			<marquee direction="right"  behaviour="slide" 
-			scrollamount="15" loop="1">Welcome Back <span  th:text="${name}"></span>
-			</marquee><br />
-	</div>
-	
-	<a href="/login">Back</a>
-	<center>
+    <nav th:replace="~{Navigation::navbar()}"></nav>
+    <main class="customer-page">
+        <header class="customer-heading">
+            <div>
+                <p class="eyebrow">YOUR FOODFRENZY</p>
+                <h1 th:text="|Hello, ${session.authName}!|">Hello!</h1>
+                <p>Search the menu, place an order, or check what you ordered before.</p>
+            </div>
+            <a class="button button-secondary" th:href="@{/products}">Browse full menu</a>
+        </header>
 
-		<form action="" th:action="@{/product/search}" method="post" class="searchInput">
-			<h1>Product Search :</h1>
-			<input type="text" name="productName" required placeholder="Please enter the Product Name....">
-			<button type="submit">SEARCH</button><br />
-			<smal style="color: red;" th:text="${message}"> </smal>
-		</form>
-		
-		<div th:if="${product!=null}" class="details">
-			<form action="" th:action="@{/product/order}" th:object="${product}" method="post">
-				ProductName :
-				<input type="text" value="" name="oName" th:value="${product.pname}" readonly /><br />
-				Product Price :
-				<input type="text" value="" name="oPrice" th:value="${product.pprice}" readonly /><br />
-				Quqntity :
-				<input type="number" placeholder="Minimun: 1KG" min="1" name="oQuantity" /><br />
+        <div class="notice notice-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+        <div class="notice notice-error" th:if="${orderError}" th:text="${orderError}"></div>
 
-				<button type="submit">Order_Now</button>
-			</form>
-		</div>
-		
-		<div th:if="${orders!=null}" class="details">
-			<h2>Your Orders :</h2>
-			<table >
-				<tr>
-	
-					<th>Product_Name</th>
-					<th>Product_Price</th>
-					<th>Product_Quantity</th>
-					<th>Total_Ammount</th>
-					<th>Date</th>
-				</tr>
-				<tr th:each="order :${orders}">
-					<td th:text="${order.oName}"></td>
-					<td th:text="${order.oPrice}"></td>
-					<td th:text="${order.oQuantity}"></td>
-					<td th:text="${order.totalAmmout}"></td>
-					<td th:text="${order.orderDate}"></td>
+        <section class="search-panel">
+            <div>
+                <p class="eyebrow">FIND YOUR FAVOURITE</p>
+                <h2>What are you craving?</h2>
+            </div>
+            <form th:action="@{/product/search}" method="post" class="search-form">
+                <label class="sr-only" for="productName">Search dishes</label>
+                <input id="productName" type="search" name="productName" th:value="${searchTerm}" placeholder="Try biryani, paneer, dessert..." required>
+                <button class="button button-dark" type="submit">Search menu</button>
+            </form>
+            <p class="search-empty" th:if="${searchResults != null and #lists.isEmpty(searchResults)}">No available dishes matched that search. Try another name.</p>
+            <div class="search-results" th:if="${searchResults != null and !#lists.isEmpty(searchResults)}">
+                <a class="search-result" th:each="result : ${searchResults}" th:href="@{'/product/buy/' + ${result.pid}}">
+                    <img th:src="${result.imageUrl}" th:alt="${result.pname}" onerror="this.src='/Images/logo.png'">
+                    <span><strong th:text="${result.pname}">Dish</strong><small th:text="${result.category}">Category</small></span>
+                    <b th:text="|₹${result.pprice}|">₹0</b>
+                </a>
+            </div>
+        </section>
 
-				</tr>
-			</table>
-		</div>
-	</center>
+        <section class="selected-product" th:if="${product != null}">
+            <img th:src="${product.imageUrl}" th:alt="${product.pname}" onerror="this.src='/Images/logo.png'">
+            <div class="selected-copy">
+                <p class="eyebrow" th:text="${product.category}">Category</p>
+                <h2 th:text="${product.pname}">Dish name</h2>
+                <p th:text="${product.pdescription}">Description</p>
+                <div class="selected-order-row">
+                    <strong class="dish-price" th:text="|₹${product.pprice} per portion|">₹0</strong>
+                    <span th:text="|${product.stockQuantity} portions available|">Available</span>
+                </div>
+                <form th:if="${product.stockQuantity > 0}" th:action="@{/product/order}" th:object="${orderRequest}" method="post" class="order-form">
+                    <input type="hidden" name="productId" th:value="${product.pid}">
+                    <label for="quantity">Quantity</label>
+                    <input id="quantity" type="number" th:field="*{quantity}" min="1" max="50" th:attr="max=${product.stockQuantity > 50 ? 50 : product.stockQuantity}" required>
+                    <button class="button button-primary" type="submit">Place order</button>
+                </form>
+                <p class="sold-out" th:if="${product.stockQuantity <= 0}">This item is currently sold out.</p>
+            </div>
+        </section>
+
+        <section class="orders-panel">
+            <div class="section-heading">
+                <div><p class="eyebrow">YOUR HISTORY</p><h2>Recent orders</h2></div>
+                <span class="order-count" th:text="|${#lists.size(orders)} orders|">0 orders</span>
+            </div>
+            <div class="table-wrap" th:if="${!#lists.isEmpty(orders)}">
+                <table>
+                    <thead><tr><th>Item</th><th>Price</th><th>Quantity</th><th>Total</th><th>Status</th><th>Order date</th></tr></thead>
+                    <tbody>
+                    <tr th:each="order : ${orders}">
+                        <td th:text="${order.oName}">Dish</td>
+                        <td th:text="|₹${order.oPrice}|">₹0</td>
+                        <td th:text="${order.oQuantity}">1</td>
+                        <td class="table-total" th:text="|₹${order.totalAmount}|">₹0</td>
+                        <td><span class="order-status" th:classappend="| status-${#strings.toLowerCase(order.status.name())}|" th:text="${order.status}">PLACED</span></td>
+                        <td th:text="${#dates.format(order.orderDate, 'dd MMM yyyy, hh:mm a')}">Date</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="empty-orders" th:if="${#lists.isEmpty(orders)}">
+                <p>You have not placed an order yet. The menu has plenty of good ideas.</p>
+                <a th:href="@{/products}">Explore the menu →</a>
+            </div>
+        </section>
+    </main>
 </body>
-
 </html>

@@ -1,51 +1,51 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-	<meta charset="UTF-8" />
-	<title>FoodFrenzy</title>
-	<link rel="icon" type="image/x-icon" href="./img/b.png">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-	<link rel="stylesheet" href="" th:href="@{/css/Navigation.css}" />
-	<link rel="stylesheet" href="" th:href="@{/css/Login.css}" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FoodFrenzy | Sign in</title>
+    <link rel="stylesheet" th:href="@{/css/Navigation.css}">
+    <link rel="stylesheet" th:href="@{/css/Auth.css}">
 </head>
-
-<body>
-	<nav th:replace="~{Navigation::navbar()}">
-	</nav>
-	<div class="LoginContainer">
-		<div class="admin">
-			<div class="content">
-				<strong style="font-size: 16px;margin-bottom: 0px;">BUSINESS</strong>
-				<h2>For <span style="color:green;">Admins</span></h2>
-
-				<form th:action="@{/adminLogin}" method="post">
-					<b>Email :</b>
-					<input type="email" name="email" placeholder="Enter email..." class="email"> <br />
-					<b>Password:</b>
-					<input type="password" name="password" placeholder="Enter password" class="password">
-					<small style="color: red;" th:text="${error}"></small><br />
-					<button type="submit" class="loginButton">Log in</button>
-				</form>
-			</div>
-		</div>
-		<div class="user">
-			<div class="content">
-				<h2> For <span style="color:green;">Users</span></h2>
-				<form th:action="@{/userLogin}" method="post" class="form">
-					<b>Email :</b>
-					<input type="email" name="userEmail" placeholder="Enter email"><br />
-
-					<b>Password:</b>
-					<input type="password" name="userPassword" placeholder="Enter password" required maxlength="8" minlength="4" class="userPassword"><br />
-
-					<small style="color: red;" th:text="${error2}"></small><br />
-					<button type="submit" class="loginButton">Log in</button><br>
-
-					<p>I don't have an account? <a href="register.html" style="color: green;">Register Here</a></p>
-				</form>
-			</div>
-		</div>
-	</div>
+<body class="auth-page">
+    <nav th:replace="~{Navigation::navbar()}"></nav>
+    <main class="auth-shell">
+        <header class="auth-heading">
+            <p class="eyebrow">WELCOME BACK</p>
+            <h1>Good to see you.</h1>
+            <p>Sign in to manage the kitchen or continue ordering your favourites.</p>
+            <p class="form-message" th:if="${requiredMessage}" th:text="${requiredMessage}"></p>
+        </header>
+        <div class="auth-grid">
+            <section class="auth-card">
+                <span class="auth-icon">01</span>
+                <h2>Customer sign in</h2>
+                <p>View your orders and order from today's menu.</p>
+                <form th:action="@{/userLogin}" method="post">
+                    <label for="userEmail">Email address</label>
+                    <input id="userEmail" type="email" name="userEmail" autocomplete="email" placeholder="you@example.com" required>
+                    <label for="userPassword">Password</label>
+                    <input id="userPassword" type="password" name="userPassword" autocomplete="current-password" placeholder="Enter your password" required>
+                    <p class="form-error" th:if="${error2}" th:text="${error2}"></p>
+                    <button class="button button-primary button-wide" type="submit">Sign in as customer</button>
+                </form>
+                <p class="auth-footnote">New here? <a th:href="@{/register}">Create a customer account</a></p>
+            </section>
+            <section class="auth-card admin-card">
+                <span class="auth-icon">02</span>
+                <h2>Administrator sign in</h2>
+                <p>Manage menu items, customers, and orders.</p>
+                <form th:action="@{/adminLogin}" method="post">
+                    <label for="adminEmail">Admin email</label>
+                    <input id="adminEmail" type="email" name="email" autocomplete="username" placeholder="admin@example.com" required>
+                    <label for="adminPassword">Password</label>
+                    <input id="adminPassword" type="password" name="password" autocomplete="current-password" placeholder="Enter your password" required>
+                    <p class="form-error" th:if="${error}" th:text="${error}"></p>
+                    <button class="button button-dark button-wide" type="submit">Open admin dashboard</button>
+                </form>
+                <p class="auth-footnote">For the first-run demo account, see the project README.</p>
+            </section>
+        </div>
+    </main>
 </body>
-
 </html>

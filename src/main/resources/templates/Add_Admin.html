@@ -1,34 +1,12 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
-<head>
-	<meta charset="UTF-8" />
-	<title>Admin : Add</title>
-	<link rel="stylesheet" href="" th:href="@{/css/Add_Admin.css}" />
-</head>
-
-<body>
-	<a href="/admin/services">Back to Services</a>
-	<div class="addAdmin">
-		<h3 style="color: red;">ADD NEW ADMIN/PARTNER</h3>
-		<form action="" th:action="@{/addingAdmin}" method="post">
-			Admin_Name :
-			<input type="text" name="adminName" placeholder="Enter name..." class="adminName" minlength="2" required>
-			<br />
-
-			Admin_Email :
-			<input type="email" name="adminEmail" placeholder="Enter email..." class="adminEmail" required><br />
-
-
-			Admin_Number :
-			<input type="tel" name="adminNumber" placeholder="Enter 10 digit mobile number..." class="adminNumber"
-				pattern="[0-9]{10}" required /><br />
-
-
-			<input type="hidden" name="adminPassword" value="1234" />
-			<button type="submit">Add_Admin</button>
-		</form>
-	</div>
-</body>
-
-</html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Add administrator | FoodFrenzy</title><link rel="stylesheet" th:href="@{/css/Navigation.css}"><link rel="stylesheet" th:href="@{/css/AdminForms.css}"></head>
+<body><nav th:replace="~{Navigation::navbar()}"></nav>
+<main class="form-page"><a class="back-link" th:href="@{/admin/services}">← Dashboard</a><header><p class="eyebrow">TEAM ACCESS</p><h1>Add an administrator</h1><p>Create a separate sign-in for a trusted team member.</p></header>
+<form class="management-form" th:action="@{/addingAdmin}" th:object="${admin}" method="post">
+    <label for="adminName">Full name</label><input id="adminName" type="text" th:field="*{adminName}" minlength="2" maxlength="80" required><small class="form-error" th:if="${#fields.hasErrors('adminName')}" th:errors="*{adminName}"></small>
+    <label for="adminEmail">Email address</label><input id="adminEmail" type="email" th:field="*{adminEmail}" required><small class="form-error" th:if="${#fields.hasErrors('adminEmail')}" th:errors="*{adminEmail}"></small>
+    <label for="adminNumber">10 digit phone number</label><input id="adminNumber" type="tel" th:field="*{adminNumber}" pattern="[0-9]{10}" required><small class="form-error" th:if="${#fields.hasErrors('adminNumber')}" th:errors="*{adminNumber}"></small>
+    <label for="adminPassword">Temporary password</label><input id="adminPassword" type="password" name="adminPassword" minlength="8" maxlength="72" autocomplete="new-password" required><small class="form-hint">At least 8 characters. The administrator can change it later.</small><small class="form-error" th:if="${#fields.hasErrors('adminPassword')}" th:errors="*{adminPassword}"></small>
+    <button class="button button-primary" type="submit">Create administrator</button>
+</form></main></body></html>

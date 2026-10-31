@@ -2,15 +2,15 @@ version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      java: corretto17
     commands:
-      - echo "Maven & Java versions"
-      - mvn -v || true
-      - java -version || true
+      - mvn -v
 
   build:
     commands:
       - echo "Building project..."
-      - mvn clean package -DskipTests
+      - mvn --batch-mode clean package -DskipTests
 
   post_build:
     commands:

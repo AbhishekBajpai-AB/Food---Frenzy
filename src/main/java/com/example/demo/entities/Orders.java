@@ -1,5 +1,6 @@
 package com.example.demo.entities;
 import java.util.Date;
+import java.math.BigDecimal;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,8 +8,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
 import jakarta.persistence.Table;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 
 @Entity
 @Table(name = "orders")
@@ -18,14 +22,24 @@ public class Orders
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int oId;
 	private String oName;
-	private double oPrice;
+	@Column(precision = 10, scale = 2)
+	private BigDecimal oPrice;
 	private int oQuantity;
+	@Temporal(jakarta.persistence.TemporalType.TIMESTAMP)
 	private Date orderDate;
-	private double totalAmmout;
+	@Column(name = "totalAmmout", precision = 12, scale = 2)
+	private BigDecimal totalAmount;
+	@Enumerated(EnumType.STRING)
+	@Column(length = 24)
+	private OrderStatus status = OrderStatus.PLACED;
 	
 	@ManyToOne
 	@JoinColumn(name="user_u_id")
 	private User user;
+
+	@ManyToOne
+	@JoinColumn(name = "product_pid")
+	private Product product;
 
 	public Date getOrderDate() {
 		return orderDate;
@@ -53,11 +67,11 @@ public class Orders
 		this.oName = oName;
 	}
 
-	public double getoPrice() {
+	public BigDecimal getoPrice() {
 		return oPrice;
 	}
 
-	public void setoPrice(double oPrice) {
+	public void setoPrice(BigDecimal oPrice) {
 		this.oPrice = oPrice;
 	}
 
@@ -76,20 +90,26 @@ public class Orders
 	public void setUser(User user) {
 		this.user = user;
 	}
+
+	public Product getProduct() { return product; }
+	public void setProduct(Product product) { this.product = product; }
 	
 
-	public double getTotalAmmout() {
-		return totalAmmout;
+	public BigDecimal getTotalAmount() {
+		return totalAmount;
 	}
 
-	public void setTotalAmmout(double totalAmmout) {
-		this.totalAmmout = totalAmmout;
+	public void setTotalAmount(BigDecimal totalAmount) {
+		this.totalAmount = totalAmount;
 	}
+
+	public OrderStatus getStatus() { return status == null ? OrderStatus.PLACED : status; }
+	public void setStatus(OrderStatus status) { this.status = status; }
 
 	@Override
 	public String toString() {
 		return "Orders [oId=" + oId + ", oName=" + oName + ", oPrice=" + oPrice + ", oQuantity=" + oQuantity
-				+ ", orderDate=" + orderDate + ", totalAmmout=" + totalAmmout + ", user=" + user + "]";
+			+ ", orderDate=" + orderDate + ", totalAmount=" + totalAmount + ", status=" + status + "]";
 	}
 
 

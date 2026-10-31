@@ -1,111 +1,139 @@
 # FoodFrenzy
-FoodFrenzy is a comprehensive system designed for managing customers, inventory, and orders. It offers secure authentication, role-based access control, and database integration using MySQL. Built with Spring Boot and Thymeleaf, the application provides a seamless experience for admin and staff members.
 
-![Screenshot 2024-10-02 123332](https://github.com/user-attachments/assets/1382d32f-3cbb-40c3-b6b5-9fc55cd5176f)
-
+FoodFrenzy is a restaurant menu, ordering, and management application built as a full-stack college project. Customers can register, browse a live menu, place orders, and track order progress. Administrators can manage menu items and stock, customer accounts, team access, and order status.
 
 ## Features
 
-- **Customer Management**: Easily add, update, and delete customer information.
-- **Inventory Management**: Keep track of your inventory items, including stock levels and pricing.
-- **Order Management**: Manage customer orders, including order creation, updates, and status tracking.
-- **User Authentication**: Secure login and authentication for admin and staff members.
-- **Role-Based Access Control**: Define roles and permissions for different user types.
-- **Thymeleaf Templates**: Utilizes Thymeleaf for dynamic HTML templates.
-- **Database Integration**: Integrated with MySQL for data storage and retrieval.
+- Customer registration and sign-in with BCrypt password hashing.
+- Contact form that emails website enquiries to the configured inbox and sets the visitor's address as Reply-To.
+- Session-based customer and administrator roles, protected routes, and CSRF protection for forms.
+- Database-backed menu with categories, descriptions, images, prices, and stock counts.
+- Searchable menu and customer order history.
+- Server-calculated order totals and stock checks inside a database transaction.
+- Order status workflow: `PLACED -> CONFIRMED -> PREPARING -> READY -> COMPLETED`; an order can be cancelled before it is ready.
+- Admin dashboard for menu, customer, administrator, stock, and order management.
+- Seeded starter menu and a configurable first-run demo administrator.
+- Responsive Thymeleaf pages with project-owned CSS and local food imagery.
 
-## Technology Stack
+## Technology
 
-- **Backend**: Spring Boot, Java 8, Spring MVC, Spring Data JPA (Hibernate)
-- **Frontend**: Thymeleaf, HTML, CSS, JavaScript
-- **Database**: MySQL
-- **IDE**: Eclipse, Spring Tool Suite (STS)
-
-## Prerequisites
-
-Before running this project, ensure you have the following installed:
-
-- Java 8
+- Java 17
+- Spring Boot 3.1.3, Spring MVC, Spring Security, Spring Data JPA, Hibernate
+- Thymeleaf, HTML, CSS
 - MySQL
-- Maven
-- Eclipse or Spring Tool Suite (STS)
+- Maven Wrapper
 
-## Setup and Installation
-# 🎁 Donate
+## Run locally
 
-<a href="https://buymeacoffee.com/1122anuragg">
-  <img src="https://user-images.githubusercontent.com/25067102/154570688-9e143f2b-fee3-4b05-a9d2-a7a3013b2b51.png" />
-<a/>
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/your-repository-url/FoodFrenzy.git
-    ```
+1. Install JDK 17 and start a local MySQL server.
+2. From the project directory, set the database and email credentials in PowerShell:
 
-2. Navigate to the project directory:
-    ```bash
-    cd FoodFrenzy
-    ```
+   ```powershell
+   $env:DB_USERNAME = "root"
+   $env:DB_PASSWORD = "your-local-mysql-password"
+   $env:MAIL_USERNAME = "t04829970@gmail.com"
+   $env:CONTACT_EMAIL = "t04829970@gmail.com"
+   $secureMailPassword = Read-Host "Gmail app password" -AsSecureString
+   $env:MAIL_PASSWORD = [System.Net.NetworkCredential]::new("", $secureMailPassword).Password
+   ```
 
-3. Configure MySQL Database:
-    - Create a new MySQL database.
-    - Update `application.properties` with your MySQL credentials:
-      ```properties
-      spring.datasource.url=jdbc:mysql://localhost:3306/foodfrenzy
-      spring.datasource.username=root
-      spring.datasource.password=root
-      spring.jpa.hibernate.ddl-auto=update
-      ```
+   The default JDBC URL is `jdbc:mysql://localhost:3306/foodfrenzy?createDatabaseIfNotExist=true`. Override it with `DB_URL` if your MySQL setup differs. The contact form uses Gmail SMTP; create an app password for the sending account and keep it private. Google's app passwords require 2-Step Verification: [Google account app passwords](https://support.google.com/mail/answer/185833).
 
-4. Run the project:
-    ```bash
-    mvn spring-boot:run
-    ```
+3. Start the app:
 
-5. Access the application:
-    - Navigate to `http://localhost:8080` in your browser. 
-## Website Screenshot
+   ```powershell
+   .\mvnw.cmd spring-boot:run
+   ```
 
-Here is a preview of the FoodFrenzy interface:
+4. Open [http://localhost:8081](http://localhost:8081).
 
-![Screenshot 2025-05-19 143351](https://github.com/user-attachments/assets/3e34f54c-c986-42ac-96a4-ed7ad18035a6)
-![Screenshot 2025-05-19 143427](https://github.com/user-attachments/assets/a4046d4e-8c3d-4629-8913-5543d709e80e)
-![Screenshot 2025-05-19 143441](https://github.com/user-attachments/assets/09c92348-ec06-4607-9ae4-88b28cc1e0ec)
-![Screenshot 2025-05-19 143452](https://github.com/user-attachments/assets/0e73aece-a28c-413d-9363-245358a0e439)
-![Screenshot 2025-05-19 143504](https://github.com/user-attachments/assets/ac26bd92-0fcd-473d-a175-9bc45fdb12ba)
+The app creates or updates the schema with Hibernate. On an empty database it adds the starter menu and a demo administrator. Existing menu and account records are kept; legacy menu rows receive a default category, image, and initial stock value when their new fields are empty.
 
+Contact messages are sent to `CONTACT_EMAIL` (defaults to `t04829970@gmail.com`). Gmail SMTP uses `MAIL_USERNAME` and `MAIL_PASSWORD`; `MAIL_HOST` and `MAIL_PORT` default to `smtp.gmail.com` and `587`. Without a valid app password, the contact form displays a send error and the visitor can still use the direct `mailto:` address.
 
-![image](https://github.com/user-attachments/assets/3d407958-efbe-449f-b4e1-5b08b9f8a28b)
+### Demo administrator
 
+- Email: `admin@foodfrenzy.local`
+- Password: `Admin@123`
 
-![Screenshot 2024-08-24 194958](https://github.com/user-attachments/assets/c11a4710-69f8-42fd-b9d7-2b5278b2c8a3) 
+Set `DEMO_ADMIN_EMAIL` and `DEMO_ADMIN_PASSWORD` before the first run to choose different demo credentials. The demo administrator is only created when that email is not already present; an existing account is never reset automatically. Customers create their own accounts from the **Create a customer account** link on the sign-in page.
 
+## Main routes
 
-![Screenshot 2024-08-24 220831](https://github.com/user-attachments/assets/d3cd3cdd-cda5-460a-a253-24e45cf600b0)  
-![Screenshot 2024-08-24 195054](https://github.com/user-attachments/assets/733afb94-a251-4a6d-86a4-3a124e8c3469)
-![Screenshot 2024-08-24 195106](https://github.com/user-attachments/assets/ef09886f-7936-4ef7-b01e-4da0008fd047) 
-![Screenshot 2024-08-24 195121](https://github.com/user-attachments/assets/219272b8-3938-4b7f-ba78-817e507beee9)
-![Screenshot 2024-10-03 093051](https://github.com/user-attachments/assets/d4da51a4-dfe8-4cc1-ae49-745f6e1ae17a) 
-![Screenshot 2024-10-03 093106](https://github.com/user-attachments/assets/09c31cf7-e960-4ea5-a858-8807317486b7)
-![Screenshot 2024-10-03 093133](https://github.com/user-attachments/assets/b1da1faa-7e71-49be-972a-432029a1e7c3) 
-![Screenshot 2024-10-03 093424](https://github.com/user-attachments/assets/b0a9a1e2-6018-475a-95fc-d64980677ee7) 
-![Screenshot 2024-10-03 093437](https://github.com/user-attachments/assets/b860f905-2c35-4af3-9df8-38cda70b4406)
+| Route | Purpose | Access |
+| --- | --- | --- |
+| `/home` | Home page | Public |
+| `/products` | Current menu | Public |
+| `/register` | Customer registration | Public |
+| `/login` | Customer/admin sign-in | Public |
+| `/product/orders` | Customer order history | Customer |
+| `/product/order` | Place an order | Customer |
+| `/admin/services` | Management dashboard | Administrator |
 
-## Project Structure
+## Project layout
 
-```bash
-src/
-├── main/
-│   ├── java/
-│   │   └── com.example.foodfrenzy/
-│   │       ├── controller/      # Contains all controllers
-│   │       ├── model/           # Contains entity classes
-│   │       ├── repository/      # Repository interfaces for database interaction
-│   │       └── service/         # Service layer with business logic
-│   ├── resources/
-│   │   ├── templates/           # Thymeleaf templates for views
-│   │   ├── static/              # Static assets (CSS, JavaScript)
-│   │   └── application.properties  # Project configuration
-│   └── webapp/
-│       └── WEB-INF/
-│           └── views/           # Additional view files
-└── test/                        # Test cases for unit testing
+```text
+src/main/java/com/example/demo/
+|-- config/           # CSRF/security setup and starter data
+|-- controllers/      # MVC routes for auth, admin, products, and orders
+|-- entities/         # JPA models and order status workflow
+|-- loginCredentials/ # Login and order form objects
+|-- repositories/     # Spring Data database access
+`-- services/         # Authentication, catalog, and order business logic
+
+src/main/resources/
+|-- templates/        # Thymeleaf pages
+|-- static/css/       # Responsive page styles
+|-- static/Images/    # Menu and brand images
+`-- application.properties
+```
+
+## Data model overview
+
+- A customer can have many orders.
+- Each order stores a customer, an optional product reference, a price snapshot, quantity, total, timestamp, and status.
+- Products store category, price, image path, availability, and stock quantity. Hiding a product keeps past order records intact.
+- Passwords are encoded before saving. Existing plain-text passwords from an earlier project database are upgraded to BCrypt after a successful sign-in.
+
+```mermaid
+erDiagram
+    USER ||--o{ ORDERS : places
+    PRODUCT o|--o{ ORDERS : references
+    USER {
+        int u_id PK
+        string uname
+        string uemail UK
+        string upassword
+        long unumber
+    }
+    PRODUCT {
+        int pid PK
+        string pname UK
+        string category
+        decimal pprice
+        int stockQuantity
+        boolean active
+    }
+    ADMIN {
+        int adminId PK
+        string adminName
+        string adminEmail UK
+        string adminPassword
+    }
+    ORDERS {
+        int oId PK
+        int user_u_id FK
+        int product_pid FK
+        decimal oPrice
+        int oQuantity
+        decimal totalAmount
+        string status
+        datetime orderDate
+    }
+```
+
+## Notes for a project presentation
+
+The order flow is a useful place to explain the layers: the controller receives a product ID and quantity, the service reloads the trusted price, checks stock under a database lock, writes the order and decrements inventory in one transaction, then the repository persists the result. The MVC views show the same data to the customer and administrator with role-specific access.
+
+This is an educational ordering demo. It does not connect to a payment provider, delivery service, or production restaurant system.

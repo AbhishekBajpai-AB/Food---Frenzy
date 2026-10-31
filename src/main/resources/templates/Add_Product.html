@@ -1,29 +1,15 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.com">
-
-<head>
-	<meta charset="UTF-8" />
-	<title>Document</title>
-	<link rel="stylesheet" href="" th:href="@{/css/Add_Product.css}" />
-</head>
-
-<body>
-<a href="/admin/services">Back to Services</a>
-	<div class="addProducts">
-		<h3 style="font-weight: bolder;color: seagreen;">ADD NEW PRODUCT :</h3>
-		<form action="" th:action="@{/addingProduct}" method="post">
-			Product_Name :
-			<input type="text" name="pname" value="" placeholder="Enter Product Name....." /> <br />
-			Product_Price :
-			<input type="text" name="pprice" placeholder="Enter Product Price...." /><br />
-			Product_Desc : <br />
-			<textarea name="pdescription" id="" cols="15" rows="1"
-				placeholder="Enter Product Description.."></textarea><br />
-
-			<button type="submit">Add_Product</button>
-
-		</form>
-	</div>
-</body>
-
-</html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Add menu item | FoodFrenzy</title><link rel="stylesheet" th:href="@{/css/Navigation.css}"><link rel="stylesheet" th:href="@{/css/AdminForms.css}"></head>
+<body><nav th:replace="~{Navigation::navbar()}"></nav>
+<main class="form-page"><a class="back-link" th:href="@{/admin/services}">← Dashboard</a><header><p class="eyebrow">THE MENU</p><h1>Add a menu item</h1><p>Give customers the details they need to make it their next favourite.</p></header>
+<form class="management-form" th:action="@{/addingProduct}" th:object="${product}" method="post">
+    <label for="pname">Item name</label><input id="pname" type="text" th:field="*{pname}" maxlength="100" required><small class="form-error" th:if="${#fields.hasErrors('pname')}" th:errors="*{pname}"></small>
+    <label for="category">Category</label><input id="category" type="text" th:field="*{category}" placeholder="Biryani, Vegetarian, Dessert..." required><small class="form-error" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></small>
+    <label for="pprice">Price (₹)</label><input id="pprice" type="number" th:field="*{pprice}" min="0.01" max="99999999" step="0.01" required><small class="form-error" th:if="${#fields.hasErrors('pprice')}" th:errors="*{pprice}"></small>
+    <label for="stockQuantity">Available portions</label><input id="stockQuantity" type="number" th:field="*{stockQuantity}" min="0" max="100000" required><small class="form-error" th:if="${#fields.hasErrors('stockQuantity')}" th:errors="*{stockQuantity}"></small>
+    <label for="imageUrl">Image path</label><input id="imageUrl" type="text" th:field="*{imageUrl}" placeholder="/Images/category/dish.jpg"><small class="form-hint">Use an image under src/main/resources/static/Images.</small>
+    <label for="pdescription">Description</label><textarea id="pdescription" th:field="*{pdescription}" rows="4" maxlength="500" placeholder="A short description of the dish"></textarea>
+    <label class="check-row"><input type="checkbox" th:field="*{active}"> Show this item on the customer menu</label>
+    <button class="button button-primary" type="submit">Add to menu</button>
+</form></main></body></html>

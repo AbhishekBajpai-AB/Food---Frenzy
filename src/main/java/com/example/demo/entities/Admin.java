@@ -1,14 +1,13 @@
 package com.example.demo.entities;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -19,15 +18,21 @@ public class Admin
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int adminId;
 
-    @NotNull
+    @NotBlank(message = "Name is required")
+    @Size(min = 2, max = 80)
     private String adminName;
 
-    @NotNull
+    @NotBlank(message = "Email is required")
     @Email
+    @Column(unique = true)
     private String adminEmail;
 
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, max = 72, message = "Password must be at least 8 characters")
     private String adminPassword;
 
+    @jakarta.validation.constraints.NotBlank(message = "Phone number is required")
+    @jakarta.validation.constraints.Pattern(regexp = "[0-9]{10}", message = "Enter a 10 digit mobile number")
     private String adminNumber;
 public int getAdminId() {
 	return adminId;
@@ -61,8 +66,8 @@ public void setAdminNumber(String adminNumber) {
 }
 @Override
 public String toString() {
-	return "Admin [adminId=" + adminId + ", adminName=" + adminName + ", adminEmail=" + adminEmail + ", adminPassword="
-			+ adminPassword + ", adminNumber=" + adminNumber + "]";
+	return "Admin [adminId=" + adminId + ", adminName=" + adminName + ", adminEmail=" + adminEmail
+			+ ", adminNumber=" + adminNumber + "]";
 }
 
 

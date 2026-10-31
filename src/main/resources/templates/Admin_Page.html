@@ -1,119 +1,80 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
-	<meta charset="UTF-8" />
-	<title>ADMIN PAGE :</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-	<link rel="stylesheet" href="" th:href="@{/css/Admin_page.css}" />
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FoodFrenzy | Admin dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/Navigation.css}">
+    <link rel="stylesheet" th:href="@{/css/Admin_Page.css}">
 </head>
-
 <body>
-	<a class="back" href="/login">Back</a>
-	<center>
-		<section class="tables">
-			<div class="admins">
-				<h2>Admins :</h2>
-				<table>
-					<tr>
-						<th>Admin_Id</th>
-						<th>Admin_Name</th>
-						<th>Admin_Email</th>
-						<th>Admin_Number</th>
-						<th>Actions</th>
-					</tr>
-					<tr th:each="admin :${admins}">
-						<td th:text="${admin.adminId}"></td>
-						<td th:text="${admin.adminName}"></td>
-						<td th:text="${admin.adminEmail}"></td>
-						<td th:text="${admin.adminNumber}"></td>
-						<td><a style="color: blue;" href="" th:href="@{'/updateAdmin/'+${admin.adminId}}"><i
-									class="fa-solid fa-pen"></i></a><span>&nbsp;</span>
-							<a style="color: red;" href="" th:href="@{'/deleteAdmin/'+${admin.adminId}}"><i
-									class="fa-solid fa-trash"></i></a>
-						</td>
-					</tr>
-				</table>
-				<a href="" class="btns" th:href="@{/addAdmin}">Add_Admin</a>
-			</div>
+    <nav th:replace="~{Navigation::navbar()}"></nav>
+    <main class="admin-page">
+        <header class="admin-heading">
+            <div><p class="eyebrow">FOODFRENZY MANAGEMENT</p><h1>Admin dashboard</h1><p>Keep your menu, customers, and orders in one place.</p></div>
+            <a class="button button-primary" th:href="@{/addProduct}">+ Add a menu item</a>
+        </header>
+        <div class="notice notice-error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+        <div class="notice notice-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+        <section class="stat-grid">
+            <article><span>MENU ITEMS</span><strong th:text="${#lists.size(products)}">0</strong><a th:href="@{/addProduct}">Manage menu →</a></article>
+            <article><span>CUSTOMERS</span><strong th:text="${#lists.size(users)}">0</strong><a th:href="@{/addUser}">Add customer →</a></article>
+            <article><span>ORDERS</span><strong th:text="${#lists.size(orders)}">0</strong><a href="#orders">Review orders →</a></article>
+            <article><span>ADMINISTRATORS</span><strong th:text="${#lists.size(admins)}">0</strong><a th:href="@{/addAdmin}">Add admin →</a></article>
+        </section>
 
-			<div class="users" th:object="${userObject}">
-				<h2>Users :</h2>
-				<table>
-					<tr>
-						<th>User_Id</th>
-						<th>User_Name</th>
-						<th>User_Email</th>
-						<th>User_Number</th>
-						<th>Actions</th>
-					</tr>
-					<tr th:each="user :${users}">
-						<td th:text="${user.u_id}"></td>
-						<td th:text="${user.uname}"></td>
-						<td th:text="${user.uemail}"></td>
-						<td th:text="${user.unumber}"></td>
-						<td><a style="color: blue;" href="" th:href="@{'/updateUser/'+${user.u_id}}"><i
-									class="fa-solid fa-pen"></i></a><span>&nbsp;</span>
-							<a style="color: red;" href="" th:href="@{'/deleteUser/'+${user.u_id}}"> <i
-									class="fa-solid fa-trash"></i></a>
-						</td>
-					</tr>
-				</table>
-				<a href="" class="btns" th:href="@{'/addUser'}">Add_User</a>
-			</div>
+        <section class="admin-section">
+            <div class="section-heading"><div><p class="eyebrow">THE CATALOGUE</p><h2>Menu items</h2></div><a class="text-link" th:href="@{/addProduct}">Add item +</a></div>
+            <div class="table-wrap">
+                <table><thead><tr><th>Item</th><th>Category</th><th>Price</th><th>Stock</th><th>Availability</th><th>Actions</th></tr></thead>
+                    <tbody><tr th:each="product : ${products}">
+                        <td><div class="item-cell"><img th:src="${product.imageUrl}" th:alt="${product.pname}" onerror="this.src='/Images/logo.png'"><span th:text="${product.pname}">Item</span></div></td>
+                        <td th:text="${product.category}">Category</td><td th:text="|₹${product.pprice}|">₹0</td><td th:text="${product.stockQuantity}">0</td>
+                        <td><span class="status-pill" th:classappend="${product.active ? 'status-active' : 'status-inactive'}" th:text="${product.active ? 'Active' : 'Hidden'}">Active</span></td>
+                        <td class="actions"><a th:href="@{'/updateProduct/' + ${product.pid}}">Edit</a><form th:action="@{'/deleteProduct/' + ${product.pid}}" method="post"><button type="submit">Hide</button></form></td>
+                    </tr><tr th:if="${#lists.isEmpty(products)}"><td colspan="6" class="empty-cell">No menu items yet.</td></tr></tbody>
+                </table>
+            </div>
+        </section>
 
+        <section class="admin-section">
+            <div class="section-heading"><div><p class="eyebrow">CUSTOMER ACCOUNTS</p><h2>Customers</h2></div><a class="text-link" th:href="@{/addUser}">Add customer +</a></div>
+            <div class="table-wrap">
+                <table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Actions</th></tr></thead>
+                    <tbody><tr th:each="user : ${users}">
+                        <td th:text="${user.uname}">Name</td><td th:text="${user.uemail}">Email</td><td th:text="${user.unumber}">Phone</td>
+                        <td class="actions"><a th:href="@{'/updateUser/' + ${user.u_id}}">Edit</a><form th:action="@{'/deleteUser/' + ${user.u_id}}" method="post"><button type="submit">Delete</button></form></td>
+                    </tr><tr th:if="${#lists.isEmpty(users)}"><td colspan="4" class="empty-cell">No customer accounts yet.</td></tr></tbody>
+                </table>
+            </div>
+        </section>
 
-			<div class="products">
-				<h2>Products :</h2>
-				<table>
-					<tr>
-						<th>Product_Id</th>
-						<th>Product_Name</th>
-						<th>Product_Price</th>
-						<th>Actions</th>
-					</tr>
-					<tr th:each="product :${products}">
-						<td th:text="${product.pid}"></td>
-						<td th:text="${product.pname}"></td>
-						<td th:text="${product.pprice}"></td>
-						<td><a style="color: blue;" href="" th:href="@{'/updateProduct/'+${product.pid}}"><i
-									class="fa-solid fa-pen"></i></a><span>&nbsp;</span>
-							<a style="color: red;" href="" th:href="@{'/deleteProduct/'+${product.pid}}"><i
-									class="fa-solid fa-trash"></i></a>
-						</td>
-					</tr>
-				</table>
-				<a href="" class="btns" th:href="@{'/addProduct'}">Add_Product</a>
-			</div>
-			
-			<div class="details">
-				<h2>Orders :</h2>
-			<table >
-				<tr>
-					<th>User_Name</th>
-					<th>User_Email</th>
-					<th>Product_Name</th>
-					<th>Product_Price</th>
-					<th>Product_Quantity</th>
-					<th>Total_Ammount</th>
-					<th>Date</th>
-				</tr>
-				<tr th:each="order :${orders}">
-					<td th:text="${order.user.uname}"></td>
-					<td th:text="${order.user.uemail}"></td>
-					<td th:text="${order.oName}"></td>
-					<td th:text="${order.oPrice}"></td>
-					<td th:text="${order.oQuantity}"></td>
-					<td th:text="${order.totalAmmout}"></td>
-					<td th:text="${order.orderDate}"></td>
+        <section class="admin-section">
+            <div class="section-heading"><div><p class="eyebrow">TEAM ACCESS</p><h2>Administrators</h2></div><a class="text-link" th:href="@{/addAdmin}">Add administrator +</a></div>
+            <div class="table-wrap">
+                <table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Actions</th></tr></thead>
+                    <tbody><tr th:each="admin : ${admins}">
+                        <td th:text="${admin.adminName}">Name</td><td th:text="${admin.adminEmail}">Email</td><td th:text="${admin.adminNumber}">Phone</td>
+                        <td class="actions"><a th:href="@{'/updateAdmin/' + ${admin.adminId}}">Edit</a><form th:action="@{'/deleteAdmin/' + ${admin.adminId}}" method="post"><button type="submit">Delete</button></form></td>
+                    </tr></tbody>
+                </table>
+            </div>
+        </section>
 
-				</tr>
-			</table>
-		</div>
-		</section>
-	</center>
-	
+        <section class="admin-section" id="orders">
+            <div class="section-heading"><div><p class="eyebrow">WHAT'S COOKING</p><h2>Customer orders</h2></div></div>
+            <div class="table-wrap">
+                <table><thead><tr><th>Customer</th><th>Email</th><th>Item</th><th>Unit price</th><th>Qty</th><th>Total</th><th>Status</th><th>Placed</th></tr></thead>
+                    <tbody><tr th:each="order : ${orders}">
+                        <td th:text="${order.user.uname}">Customer</td><td th:text="${order.user.uemail}">Email</td><td th:text="${order.oName}">Item</td>
+                        <td th:text="|₹${order.oPrice}|">₹0</td><td th:text="${order.oQuantity}">1</td><td class="table-total" th:text="|₹${order.totalAmount}|">₹0</td>
+                        <td><form class="status-form" th:action="@{'/admin/orders/' + ${order.oId} + '/status'}" method="post"><select name="status" aria-label="Order status"><option value="PLACED" th:selected="${order.status.name() == 'PLACED'}">Placed</option><option value="CONFIRMED" th:selected="${order.status.name() == 'CONFIRMED'}">Confirmed</option><option value="PREPARING" th:selected="${order.status.name() == 'PREPARING'}">Preparing</option><option value="READY" th:selected="${order.status.name() == 'READY'}">Ready</option><option value="COMPLETED" th:selected="${order.status.name() == 'COMPLETED'}">Completed</option><option value="CANCELLED" th:selected="${order.status.name() == 'CANCELLED'}">Cancelled</option></select><button type="submit">Update</button></form></td>
+                        <td th:text="${#dates.format(order.orderDate, 'dd MMM yyyy, hh:mm a')}">Date</td>
+                    </tr><tr th:if="${#lists.isEmpty(orders)}"><td colspan="8" class="empty-cell">No orders have been placed yet.</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+        <footer class="admin-footer">FoodFrenzy management · Keep it fresh.</footer>
+    </main>
 </body>
-
 </html>

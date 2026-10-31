@@ -1,25 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home : Pavan Tea</title>
-    <link rel="stylesheet" href="" th:href="@{/css/Navigation.css}">
-    <link rel="stylesheet" href="" th:href="@{/css/Home.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-</head>
 <body>
-    <nav th:fragment="navbar()">
-        <img th:src="@{/Images/logo.png}" alt="Logo" class="logo">
-        <ul>
-            <li><a href="/home">Home</a></li>
-            <li><a href="/products">Products</a></li>
-            <li><a href="/location">Locate Us</a></li>
-            <li><a href="/about">About Us</a></li>
-            <li><a href="/login">Log In <i class="fa-duotone fa-arrow-left-to-arc"></i></a></li>
-        </ul>
-    </nav>
+<nav th:fragment="navbar()" class="site-nav">
+    <a class="brand" th:href="@{/home}">
+        <img th:src="@{/Images/logo.png}" alt="FoodFrenzy logo">
+        <span>Food<span class="brand-accent">Frenzy</span></span>
+    </a>
+    <div class="nav-links">
+        <a th:href="@{/home}">Home</a>
+        <a th:href="@{/products}">Menu</a>
+        <a th:href="@{/location}">Find us</a>
+        <a th:href="@{/about}">About</a>
+    </div>
+    <div class="nav-account">
+        <a th:if="${session.authRole == 'ADMIN'}" th:href="@{/admin/services}" class="nav-user" th:text="${session.authName}">Admin</a>
+        <a th:if="${session.authRole == 'USER'}" th:href="@{/product/orders}" class="nav-user" th:text="${session.authName}">My orders</a>
+        <form th:if="${session.authRole != null}" th:action="@{/logout}" method="post">
+            <button class="nav-button" type="submit">Log out</button>
+        </form>
+        <a th:if="${session.authRole == null}" th:href="@{/login}" class="nav-button">Log in</a>
+    </div>
+</nav>
 </body>
 </html>
-
-

@@ -1,47 +1,29 @@
 <!doctype html>
-<html lang="en" xmnls:th="http://www.thymeleaf.org">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-	<meta charset="UTF-8" />
-	<title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FoodFrenzy | Order confirmed</title>
+    <link rel="stylesheet" th:href="@{/css/Navigation.css}">
+    <link rel="stylesheet" th:href="@{/css/BuyProduct.css}">
 </head>
-<style>
-	body{
-		background-color:navajowhite;
-		font-family: cursive;
-		font-size: 30px;
-		
-	}
-	.text{
-		position: relative;
-		left: 250px;
-		top: 200px;
-		text-align: center;
-		height: max-content;
-		width: max-content;
-	}
-	span,h4
-	{
-		color: green;
-	}
-	a{
-		border: 1px solid black;
-		text-decoration: none;
-		background-color: darkgreen;
-		color: aliceblue;
-		font-family: sans-serif;
-		padding: 5px;
-	}
-	
-</style>
-
 <body>
-		<a href="/product/back" >Back</a>
-	<div class="text">
-		<h4>Ordered SuccessFully... !!!</h4>
-		<h3 style="font-family: sans-serif;">Your purchased amount is : <span th:text="'₹ '+${amount}+'/-'"></span></h3>
-	</div>
-
+    <nav th:replace="~{Navigation::navbar()}"></nav>
+    <main class="confirmation-page">
+        <div class="confirmation-icon">✓</div>
+        <p class="eyebrow">ORDER CONFIRMED</p>
+        <h1>Thanks for your order!</h1>
+        <p>Your order has been added to your history. The kitchen has the details.</p>
+        <section class="receipt-card" th:if="${order != null}">
+            <div><span>Order number</span><strong th:text="|#${order.oId}|">#0</strong></div>
+            <div><span>Dish</span><strong th:text="${order.oName}">Dish name</strong></div>
+            <div><span>Quantity</span><strong th:text="${order.oQuantity}">1</strong></div>
+            <div><span>Total paid</span><strong class="dish-price" th:text="|₹${order.totalAmount}|">₹0</strong></div>
+        </section>
+        <div class="hero-actions">
+            <a class="button button-primary" th:href="@{/product/orders}">View my orders</a>
+            <a class="button button-secondary" th:href="@{/products}">Order something else</a>
+        </div>
+    </main>
 </body>
-
 </html>

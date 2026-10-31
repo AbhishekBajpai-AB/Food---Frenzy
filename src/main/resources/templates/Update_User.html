@@ -1,26 +1,13 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-	<meta charset="UTF-8" />
-	<title>Admin : Update</title>
-		<link rel="stylesheet" href="" th:href="@{/css/Update_User.css}" />
-</head>
-<body>
-	<a href="/services"> Back to Services</a>
-	<div class="updateUser">
-		<h3 style="color: red;"> UPDATE EXISTING USER/CUSTOMER </h3>
-		<form  action=""  th:action="@{'/updatingUser/'+${user.u_id}}"    th:object="${user}">
-			User_Id :
-			<input  type="hidden" name="uid" th:value="${user.u_id}" th:text="${user.u_id}"/><br />
-			User_Name :
-			<input type="text" name="uname" th:value="${user.uname}"/>
-			User_Emai :
-			<input type="email" name="uemail" th:value="${user.uemail}"  />
-			User_Number :
-			<input type="tel" name="unumber" th:value="${user.unumber}" pattern="[0-9]{10}"/>
-			
-		<button type="submit">Update_User</button>
-		</form>
-	</div>
-</body>
-</html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Edit customer | FoodFrenzy</title><link rel="stylesheet" th:href="@{/css/Navigation.css}"><link rel="stylesheet" th:href="@{/css/AdminForms.css}"></head>
+<body><nav th:replace="~{Navigation::navbar()}"></nav>
+<main class="form-page"><a class="back-link" th:href="@{/admin/services}">← Dashboard</a><header><p class="eyebrow">CUSTOMER ACCOUNTS</p><h1>Edit customer</h1><p>Leave the password empty to keep the existing password.</p></header>
+<div class="notice notice-error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+<form class="management-form" th:action="@{'/updatingUser/' + ${user.u_id}}" th:object="${user}" method="post">
+    <label for="uname">Full name</label><input id="uname" type="text" th:field="*{uname}" minlength="2" maxlength="80" required>
+    <label for="uemail">Email address</label><input id="uemail" type="email" th:field="*{uemail}" required>
+    <label for="unumber">10 digit phone number</label><input id="unumber" type="tel" th:field="*{unumber}" pattern="[0-9]{10}" required>
+    <label for="upassword">New password <span>(optional)</span></label><input id="upassword" type="password" name="upassword" minlength="8" maxlength="72" autocomplete="new-password">
+    <button class="button button-primary" type="submit">Save customer</button>
+</form></main></body></html>

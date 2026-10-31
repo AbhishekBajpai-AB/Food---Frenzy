@@ -1,80 +1,41 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-	<meta charset="UTF-8" />
-	<title>FoodFrenzy</title>
-	<link rel="icon" type="image/x-icon" href="./img/b.png">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-	<link rel="stylesheet" href="" th:href="@{/css/Navigation.css}" />
-	<link rel="stylesheet" href="" th:href="@{/css/Locate_us.css}" />
-	<style>
-		.icons{
-			align-items: center;
-		}
-	</style>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FoodFrenzy | Find us</title>
+    <link rel="stylesheet" th:href="@{/css/Navigation.css}">
+    <link rel="stylesheet" th:href="@{/css/Locate_us.css}">
 </head>
-
 <body>
-	<nav th:replace="~{Navigation::navbar()}"></nav>
-	<center>
-		<h1 style="color: orangered; ">Our Location</h1>
-		<small style="color: red;font-weight: bold;">Internet required..</small>
-	</center>
-	<div class="location">
-<section class="location">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.2587642448775!2d77.69820641413502!3d12.955286818742959!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae13afc62813f9%3A0xdcf1837520b28dfa!2sJSpiders%20Marathahalli!5e0!3m2!1sen!2sin!4v1674150882329!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </section>
-
-    </section>
-
-    <section class="contact-us">
-        <div class="row">
-            <div class="contact-col">
-                <div>
-                    <i class="contact-icon fas fa-home"></i>
-                    <span>
-                        <h5>761/1, 3rd Floor, Outer Ring Rd, next to Chaitanya Techno School, near KLM Mall, Marathahalli, Bengaluru, Karnataka 560037</h5>
-                        <p>Bengaluru, India</p>
-                    </span>
-                </div>
-
-                <div>
-                    <i class="contact-icon fas fa-phone"></i>
-                    <span>
-                        <h5>+917234020314</h5>
-                        <p>Monday to Saturday, 10AM to 8PM</p>
-                    </span>
-                </div>
-
-                <div>
-                    <i class="contact-icon fas fa-envelope"></i>
-                    <span>
-                        <h5>scanurag@gmail.com</h5>
-                        <p>Email us your query</p>
-                    </span>
-                </div>
-            </div>
-            <div class="contact-col">
-                <form action="" method="post" enctype="text/plain">
-                    <input type="text" name="name" placeholder="Enter your name" required>
-                    <input type="email" name="email" placeholder="Enter email address" required>
-                    <input type="text" name="subject" placeholder="Enter subject" required>
-                    <textarea rows="8" name="message" placeholder="Message" required></textarea>
-                    <button type="submit" class="visit-btn red-btn">Send</button>
+    <nav th:replace="~{Navigation::navbar()}"></nav>
+    <main class="location-page">
+        <header><p class="eyebrow">COME SAY HELLO</p><h1>Find your way to us.</h1><p>Drop by, give us a call, or send the team a message.</p></header>
+        <div class="notice notice-success" th:if="${contactSuccess}" th:text="${contactSuccess}"></div>
+        <div class="notice notice-error" th:if="${contactError}" th:text="${contactError}"></div>
+        <div class="location-layout">
+            <section class="map-card"><iframe title="Map showing FoodFrenzy's location" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.2587642448775!2d77.69820641413502!3d12.955286818742959!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae13afc62813f9%3A0xdcf1837520b28dfa!2sJSpiders%20Marathahalli!5e0!3m2!1sen!2sin!4v1674150882329!5m2!1sen!2sin" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></section>
+            <section class="contact-card">
+                <article><span class="contact-mark">&#9906;</span><div><h2>Visit</h2><p>761/1, 3rd Floor, Outer Ring Road, Marathahalli, Bengaluru, Karnataka 560037</p></div></article>
+                <article><span class="contact-mark">&#9742;</span><div><h2>Call</h2><p>+91-7786xxxxxx</p><small>Monday to Saturday, 10 AM to 8 PM</small></div></article>
+                <article><span class="contact-mark">&#9993;</span><div><h2>Email</h2><p><a href="mailto:t04829970@gmail.com">t04829970@gmail.com</a></p><small>Send a message and it will reach this inbox.</small></div></article>
+                <form class="contact-form" th:action="@{/contact}" th:object="${contactForm}" method="post">
+                    <h2>Send a message</h2>
+                    <label for="contactName">Your name</label>
+                    <input id="contactName" type="text" th:field="*{name}" maxlength="100" autocomplete="name" required>
+                    <small class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+                    <label for="contactEmail">Your email</label>
+                    <input id="contactEmail" type="email" th:field="*{email}" maxlength="254" autocomplete="email" required>
+                    <small class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+                    <label for="contactSubject">Subject</label>
+                    <input id="contactSubject" type="text" th:field="*{subject}" maxlength="120" required>
+                    <small class="field-error" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></small>
+                    <label for="contactMessage">Message</label>
+                    <textarea id="contactMessage" th:field="*{message}" rows="4" minlength="10" maxlength="5000" required></textarea>
+                    <small class="field-error" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></small>
+                    <button class="button button-primary" type="submit">Send message</button>
                 </form>
-            </div>
+            </section>
         </div>
-    </section>
-
-    <section class="footer">
-        <h4 style="text-align: center;">About Us</h4>
-        <p style="text-align: center;">
-        ”Explore our wide range of products designed to enhance your life."
-        </p>
-            <p style="text-align: center;">© Copyright 2019 FoodFrenzy</pstyle="text-align: center;">
-        </div>
-    </section>
+    </main>
 </body>
-
 </html>
