@@ -13,10 +13,14 @@ import org.springframework.data.repository.query.Param;
 
 public interface ProductRepository extends JpaRepository<Product,Integer>
 {
-	Optional<Product> findByPnameIgnoreCase(String name);
+	@Query("select p from Product p where lower(p.pname) = lower(:name)")
+	Optional<Product> findByNameIgnoreCase(@Param("name") String name);
 	List<Product> findByActiveTrueOrderByCategoryAscPnameAsc();
-	List<Product> findByPnameContainingIgnoreCaseAndActiveTrue(String name);
-	boolean existsByPnameIgnoreCase(String name);
+	@Query("select p from Product p where p.active = true and lower(p.pname) like lower(concat(concat('%', :name), '%'))")
+	List<Product> searchAvailableByName(@Param("name") String name);
+
+	@Query("select case when count(p) > 0 then true else false end from Product p where lower(p.pname) = lower(:name)")
+	boolean nameExistsIgnoreCase(@Param("name") String name);
 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query("select p from Product p where p.pid = :id")

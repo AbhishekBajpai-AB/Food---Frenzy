@@ -24,6 +24,7 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain applicationSecurity(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(authorize -> authorize
+				.requestMatchers("/actuator/health").permitAll()
 				.requestMatchers("/admin/**", "/addAdmin", "/addingAdmin", "/updateAdmin/**", "/updatingAdmin/**", "/deleteAdmin/**",
 						"/addProduct", "/addingProduct", "/updateProduct/**", "/updatingProduct/**", "/deleteProduct/**",
 						"/addUser", "/addingUser", "/updateUser/**", "/updatingUser/**", "/deleteUser/**")

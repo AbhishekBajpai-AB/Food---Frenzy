@@ -12,51 +12,93 @@ FoodFrenzy is a restaurant menu, ordering, and management application built as a
 - Server-calculated order totals and stock checks inside a database transaction.
 - Order status workflow: `PLACED -> CONFIRMED -> PREPARING -> READY -> COMPLETED`; an order can be cancelled before it is ready.
 - Admin dashboard for menu, customer, administrator, stock, and order management.
-- Seeded starter menu and a configurable first-run demo administrator.
+- Seeded starter menu and a first administrator created from private environment variables.
+- MySQL schema migration, a production profile, Docker packaging, and a health endpoint.
 - Responsive Thymeleaf pages with project-owned CSS and local food imagery.
 
 ## Technology
 
 - Java 17
-- Spring Boot 3.1.3, Spring MVC, Spring Security, Spring Data JPA, Hibernate
+- Spring Boot 4.1.2, Spring MVC, Spring Security, Spring Data JPA, Hibernate
 - Thymeleaf, HTML, CSS
 - MySQL
 - Maven Wrapper
 
 ## Run locally
 
-1. Install JDK 17 and start a local MySQL server.
-2. From the project directory, set the database and email credentials in PowerShell:
+1. Install JDK 17 and start MySQL 8. Create or use the `foodfrenzy` database.
+2. In PowerShell, set your local database details and choose a private first-admin password. Run these commands in the same terminal:
 
    ```powershell
    $env:DB_USERNAME = "root"
-   $env:DB_PASSWORD = "your-local-mysql-password"
-   $env:MAIL_USERNAME = "t04829970@gmail.com"
-   $env:CONTACT_EMAIL = "t04829970@gmail.com"
-   $secureMailPassword = Read-Host "Gmail app password" -AsSecureString
-   $env:MAIL_PASSWORD = [System.Net.NetworkCredential]::new("", $secureMailPassword).Password
-   ```
-
-   The default JDBC URL is `jdbc:mysql://localhost:3306/foodfrenzy?createDatabaseIfNotExist=true`. Override it with `DB_URL` if your MySQL setup differs. The contact form uses Gmail SMTP; create an app password for the sending account and keep it private. Google's app passwords require 2-Step Verification: [Google account app passwords](https://support.google.com/mail/answer/185833).
-
-3. Start the app:
-
-   ```powershell
+   $secureDbPassword = Read-Host "MySQL password" -AsSecureString
+   $env:DB_PASSWORD = [System.Net.NetworkCredential]::new("", $secureDbPassword).Password
+   $env:DEMO_ADMIN_EMAIL = "admin@foodfrenzy.local"
+   $secureAdminPassword = Read-Host "New admin password" -AsSecureString
+   $env:DEMO_ADMIN_PASSWORD = [System.Net.NetworkCredential]::new("", $secureAdminPassword).Password
    .\mvnw.cmd spring-boot:run
    ```
 
-4. Open [http://localhost:8081](http://localhost:8081).
+3. Open [http://localhost:8081](http://localhost:8081).
 
-The app creates or updates the schema with Hibernate. On an empty database it adds the starter menu and a demo administrator. Existing menu and account records are kept; legacy menu rows receive a default category, image, and initial stock value when their new fields are empty.
+Local startup uses the `local` profile and Hibernate schema updates for compatibility with an existing project database. On an empty local database it creates the schema and inserts the starter menu. If the database has no administrator, `DEMO_ADMIN_EMAIL` and `DEMO_ADMIN_PASSWORD` are required. Existing administrator passwords are never reset from environment variables.
 
-Contact messages are sent to `CONTACT_EMAIL` (defaults to `t04829970@gmail.com`). Gmail SMTP uses `MAIL_USERNAME` and `MAIL_PASSWORD`; `MAIL_HOST` and `MAIL_PORT` default to `smtp.gmail.com` and `587`. Without a valid app password, the contact form displays a send error and the visitor can still use the direct `mailto:` address.
+Email is optional for starting the app. Contact messages are sent to `CONTACT_EMAIL` (default `t04829970@gmail.com`). Gmail SMTP uses `MAIL_USERNAME` and `MAIL_PASSWORD`; `MAIL_HOST` and `MAIL_PORT` default to `smtp.gmail.com` and `587`. Without valid SMTP settings the contact form explains that sending failed and provides the direct email address. Keep the Gmail app password out of source control.
 
-### Demo administrator
+## Run with Docker Compose
 
-- Email: `admin@foodfrenzy.local`
-- Password: `Admin@123`
+Docker Compose starts the app and a MySQL 8.4 database with a persistent volume. Copy `.env.example` to `.env`, replace every `replace-with-...` value with a private random password, then run:
 
-Set `DEMO_ADMIN_EMAIL` and `DEMO_ADMIN_PASSWORD` before the first run to choose different demo credentials. The demo administrator is only created when that email is not already present; an existing account is never reset automatically. Customers create their own accounts from the **Create a customer account** link on the sign-in page.
+```powershell
+docker compose up --build
+```
+
+Open [http://localhost:8081](http://localhost:8081). The health check is available at [http://localhost:8081/actuator/health](http://localhost:8081/actuator/health). For a public HTTPS deployment, set `SESSION_COOKIE_SECURE=true` and terminate TLS at the hosting provider or reverse proxy. Store environment values in the provider's secret settings rather than uploading `.env`.
+
+The `prod` profile requires `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `DEMO_ADMIN_EMAIL`, and `DEMO_ADMIN_PASSWORD`. It validates the database schema after Flyway runs and refuses to use Hibernate's automatic schema update. The first migration is intended for a fresh deployment database; take a backup and plan a baseline migration before connecting a legacy database with existing data.
+
+## Deploy on Railway
+
+The repository includes a root-level `Dockerfile`, which Railway detects automatically. For a first deployment:
+
+1. Push this project to GitHub, create a Railway project from that repository, and let the first build use the detected `Dockerfile`.
+2. In the Railway project, add a **MySQL** database service. Keep it private; the web service connects over Railway's private network.
+3. In the web service's **Variables** tab, add the variables below. If your database service has a name other than `MySQL`, replace `MySQL` in the three reference expressions with its exact Railway service name.
+
+   | Variable | Value |
+   | --- | --- |
+   | `SPRING_PROFILES_ACTIVE` | `prod` |
+   | `DB_URL` | `jdbc:mysql://${{MySQL.MYSQLHOST}}:${{MySQL.MYSQLPORT}}/${{MySQL.MYSQLDATABASE}}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC` |
+   | `DB_USERNAME` | `${{MySQL.MYSQLUSER}}` |
+   | `DB_PASSWORD` | `${{MySQL.MYSQLPASSWORD}}` |
+   | `DEMO_ADMIN_EMAIL` | Your chosen administrator email |
+   | `DEMO_ADMIN_PASSWORD` | A new, unique administrator password |
+   | `CONTACT_EMAIL` | `t04829970@gmail.com` |
+   | `SESSION_COOKIE_SECURE` | `true` |
+
+   Set the administrator password directly in Railway's private Variables tab. Do not put it in GitHub or share it in chat. Railway's `${{Service.VARIABLE}}` syntax creates references to the MySQL service's generated connection settings. Do not set `PORT`; Railway supplies it, and the app listens on that value.
+
+4. In the web service's **Settings → Deploy**, set the healthcheck path to `/actuator/health`. In **Settings → Networking**, generate a public domain for the web service. Railway's injected `PORT` is used by the app; do not hard-code a public port.
+5. Deploy and check the deployment logs. After it becomes healthy, open the generated domain and create a customer account. Sign in with the administrator email/password you set above.
+6. If you want the contact form to send messages, also set `MAIL_USERNAME` to the Gmail account that sends mail and `MAIL_PASSWORD` to that account's Google App Password. These are optional for running the website. The recipient remains `CONTACT_EMAIL`.
+
+The first production database must be a **fresh Railway MySQL database** so Flyway can create the tables and the app can seed its starter menu and first administrator. Your local MySQL data does not move to Railway automatically. Do not connect Railway to the existing local database or import `.env.example`; that file contains local Docker Compose values. If you need to preserve existing records, back them up and plan a Flyway baseline/import before deploying them.
+
+Enable database backups in Railway after the first deploy. See Railway's [MySQL guide](https://docs.railway.com/databases/mysql), [Dockerfile guide](https://docs.railway.com/builds/dockerfiles), and [healthcheck guide](https://docs.railway.com/deployments/healthchecks).
+
+## Admin account
+
+No shared administrator password is shipped in the project. On an empty database, the first administrator is created from `DEMO_ADMIN_EMAIL` and `DEMO_ADMIN_PASSWORD`. Set these before the first app start and keep them private. Changing the environment variables later does not modify an existing admin account. Customers create their own accounts from the **Create a customer account** link on the sign-in page.
+
+## Build and tests
+
+Run the complete local check with:
+
+```powershell
+.\mvnw.cmd clean verify
+```
+
+Tests use an isolated in-memory H2 database and do not need your local MySQL or email credentials.
 
 ## Main routes
 

@@ -17,10 +17,13 @@ import com.example.demo.services.ProductServices;
 public class DataInitializer {
 	@Bean
 	CommandLineRunner seedDemoData(AdminServices adminServices, ProductServices productServices,
-			@Value("${app.demo-admin.email:admin@foodfrenzy.local}") String adminEmail,
-			@Value("${app.demo-admin.password:Admin@123}") String adminPassword) {
+			@Value("${app.demo-admin.email:}") String adminEmail,
+			@Value("${app.demo-admin.password:}") String adminPassword) {
 		return args -> {
-			if (!adminServices.emailExists(adminEmail)) {
+			if (adminServices.getAll().isEmpty()) {
+				if (adminEmail == null || adminEmail.isBlank() || adminPassword == null || adminPassword.isBlank()) {
+					throw new IllegalStateException("No administrator account exists. Set DEMO_ADMIN_EMAIL and DEMO_ADMIN_PASSWORD to create the first administrator.");
+				}
 				Admin admin = new Admin();
 				admin.setAdminName("FoodFrenzy Administrator");
 				admin.setAdminEmail(adminEmail);

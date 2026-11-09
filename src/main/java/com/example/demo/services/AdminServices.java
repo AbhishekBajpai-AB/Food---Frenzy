@@ -28,12 +28,12 @@ public class AdminServices {
 	}
 
 	public boolean emailExists(String email) {
-		return email != null && adminRepository.existsByAdminEmailIgnoreCase(email.trim());
+		return email != null && adminRepository.emailExistsIgnoreCase(email.trim());
 	}
 
 	public Admin authenticate(String email, String rawPassword) {
 		if (email == null || rawPassword == null) return null;
-		Admin admin = adminRepository.findByAdminEmailIgnoreCase(email.trim()).orElse(null);
+		Admin admin = adminRepository.findByEmailIgnoreCase(email.trim()).orElse(null);
 		if (admin == null || admin.getAdminPassword() == null) return null;
 		String stored = admin.getAdminPassword();
 		boolean encoded = stored.startsWith("$2a$") || stored.startsWith("$2b$") || stored.startsWith("$2y$");

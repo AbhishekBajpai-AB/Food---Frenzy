@@ -31,11 +31,11 @@ public class UserServices {
 	}
 
 	public User getUserByEmail(String email) {
-		return userRepository.findByUemailIgnoreCase(email).orElse(null);
+		return userRepository.findByEmailIgnoreCase(email).orElse(null);
 	}
 
 	public boolean emailExists(String email) {
-		return email != null && userRepository.existsByUemailIgnoreCase(email.trim());
+		return email != null && userRepository.emailExistsIgnoreCase(email.trim());
 	}
 
 	public User register(User user) {

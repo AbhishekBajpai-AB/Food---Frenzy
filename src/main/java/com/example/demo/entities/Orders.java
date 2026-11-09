@@ -19,7 +19,7 @@ import jakarta.persistence.EnumType;
 public class Orders
 {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int oId;
 	private String oName;
 	@Column(precision = 10, scale = 2)

@@ -35,15 +35,15 @@ public class ProductServices {
 	}
 
 	public List<Product> searchProducts(String name) {
-		return productRepository.findByPnameContainingIgnoreCaseAndActiveTrue(name.trim());
+		return productRepository.searchAvailableByName(name.trim());
 	}
 
 	public Product getProductByName(String name) {
-		return productRepository.findByPnameIgnoreCase(name.trim()).orElse(null);
+		return productRepository.findByNameIgnoreCase(name.trim()).orElse(null);
 	}
 
 	public boolean existsByName(String name) {
-		return name != null && productRepository.existsByPnameIgnoreCase(name.trim());
+		return name != null && productRepository.nameExistsIgnoreCase(name.trim());
 	}
 
 	@Transactional
